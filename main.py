@@ -74,9 +74,9 @@ while True:
       #print(hand_landmarks)
       #print(lista)
       break
-    elif cv2.waitKey(1) == ord('p'):
+    """ elif cv2.waitKey(1) == ord('p'):
       count += 1
       print(count)
-      lista.append(lv.landmark_vetor(hand_landmarks))
+      lista.append(lv.landmark_vetor(hand_landmarks)) """
     
 cv2.destroyAllWindows
