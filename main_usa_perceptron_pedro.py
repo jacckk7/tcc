@@ -29,8 +29,8 @@ while True:
   if success:
     RGB_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
     result = hand.process(RGB_frame)
-    if result.multi_hand_landmarks:
-      handLandmarks = result.multi_hand_landmarks[0]
+    if result.multi_hand_world_landmarks:
+      handLandmarks = result.multi_hand_world_landmarks[0]
       
       atual_point = []
       
