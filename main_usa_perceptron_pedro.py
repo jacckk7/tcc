@@ -1,8 +1,10 @@
 import cv2
 import mediapipe as mp
 import numpy as np
-
+import tensorflow as tf
 from tensorflow.keras.models import load_model
+
+tf.keras.config.disable_interactive_logging()
 
 alfabeto = {
     "a": 0, "b": 1, "c": 2, "d": 3, "e": 4, "f": 5, "g": 6,
@@ -23,6 +25,8 @@ hand = mp_hands.Hands(max_num_hands=1)
 model = load_model("meu_modelo.keras")
 print("---------deuboom-----------")
 
+
+ultima_letra = ""
 while True:
   success, frame = cap.read()
 
@@ -45,8 +49,11 @@ while True:
       previsao = model.predict(atual_point)
       classe_prevista = np.argmax(previsao, axis=1)[0]
       letra_prevista = list(alfabeto.keys())[list(alfabeto.values()).index(classe_prevista)]
-      print(f"Letra prevista: {letra_prevista}")
-          
+
+      if (letra_prevista != ultima_letra):
+        print(f"\rLetra prevista: {letra_prevista}", end="")
+        ultima_letra = letra_prevista
+
       #for hand_landmarks in result.multi_hand_world_landmarks:
         #print(hand_landmarks)
         #mp_drawing.draw_landmarks(frame, hand_landmarks, mp_hands.HAND_CONNECTIONS)

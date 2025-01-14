@@ -1,5 +1,5 @@
 import numpy as np
-import letters_numbers as ln
+import vetores_separados as vs
 import tensorflow as tf
 from sklearn.model_selection import train_test_split
 
@@ -12,7 +12,7 @@ alfabeto = {
     "v": 21, "w": 22, "x": 23, "y": 24, "z": 25
 }
 
-for chave, valores in ln.vetor_word.items():
+for chave, valores in vs.vetor_world_pedro.items():
   for valor in valores:
     x.append(np.array(valor).flatten())
     y.append(alfabeto.get(chave))
@@ -24,7 +24,7 @@ y = np.array(y)
 x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_state=42)
 
 NUMERO_LETRAS = 26
-Z = 128
+Z = 40 ##
 ATIVACAO = 'relu'
 EPOCHS=120
 
@@ -64,6 +64,6 @@ for i in range(10):  # Exibir os 10 primeiros exemplos como exemplo
     print("-" * 30)
 
 
-model.save("meu_modelo.keras")
+model.save("modelo_pedro.keras")
 
 
