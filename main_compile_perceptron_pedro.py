@@ -3,6 +3,18 @@ import vetores_separados as vs
 import tensorflow as tf
 from sklearn.model_selection import train_test_split
 
+tf.keras.config.disable_interactive_logging()
+
+#Anotações para testes
+N_TESTE = 6
+N_NEURONIOS = 128
+DADO = "pedro"
+EPOCHS=360
+
+########-NÃO MUDAR-##########
+NUMERO_LETRAS = 26
+ATIVACAO = 'relu'
+#############################
 x = []  # Vetores de landmarks
 y = []  # vetor de letras
 alfabeto = {
@@ -21,15 +33,13 @@ x = np.array(x)
 y = np.array(y)
 
 # Dividir em treino e teste
-x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_state=42)
+# 40% Testes - 30% validacao - 30% Testes
+x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.4, random_state=42)
 
-NUMERO_LETRAS = 26
-Z = 40 ##
-ATIVACAO = 'relu'
-EPOCHS=120
+x_validation, x_test, y_validation, y_test = train_test_split(x_test, y_test, test_size=0.5, random_state=42)
 
 model = tf.keras.Sequential([
-    tf.keras.layers.Dense(Z, activation=ATIVACAO), 
+    tf.keras.layers.Dense(N_NEURONIOS, activation=ATIVACAO), 
     tf.keras.layers.Dense(NUMERO_LETRAS, activation='softmax') 
 ])
 
@@ -39,31 +49,32 @@ model.compile(optimizer='adam',
 
 
 #########################TREINAMENTO###########################
+print("#" * 30)
+print("TREINO")
+menor_loss = 100
+menor_i = -1
 
-model.fit(x_train, y_train, epochs=EPOCHS)
 
+for i in range(EPOCHS//10):
+    model.fit(x_train, y_train, epochs=10)
+    loss, accuracy = model.evaluate(x_validation, y_validation, verbose=1)
+    print(f"Epoch: {(i + 1) * 10}")
+    print(f"loss: {loss}")
+    print(f"Acurácia: {accuracy}%\n")
+    if loss < menor_loss:
+       menor_loss = loss
+       menor_i = (i + 1)*10
+       model.save(f"modelos_gerados/t{N_TESTE}_n{N_NEURONIOS}_e{menor_i}_{DADO}_modelo.keras")
+
+
+print(f"menor loss: {menor_loss} ({menor_i})\n")
 ###########################TESTES##############################
 print("#" * 30)
-
+print("TESTE")
 # Avaliar o modelo no conjunto de teste
 loss, accuracy = model.evaluate(x_test, y_test, verbose=1)
-print(f"Perda no teste: {loss}")
+print(f"Loss: {loss}")
 print(f"Acurácia no teste: {accuracy * 100:.2f}%")
 
-# Fazer predições no conjunto de teste
-predictions = model.predict(x_test)
-
-# Obter a classe prevista para cada exemplo
-predicted_classes = np.argmax(predictions, axis=1)
-
-# Comparar com as classes reais
-for i in range(10):  # Exibir os 10 primeiros exemplos como exemplo
-    print(f"Exemplo {i + 1}:")
-    print(f"Classe verdadeira: {y_test[i]} ({list(alfabeto.keys())[y_test[i]]})")
-    print(f"Classe prevista: {predicted_classes[i]} ({list(alfabeto.keys())[predicted_classes[i]]})")
-    print("-" * 30)
-
-
-model.save("modelo_pedro.keras")
 
 
