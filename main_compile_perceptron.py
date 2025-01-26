@@ -55,16 +55,15 @@ menor_loss = 100
 menor_i = -1
 
 
-for i in range(EPOCHS//10):
-    model.fit(x_train, y_train, epochs=10)
+for i in range(EPOCHS):
+    model.fit(x_train, y_train, epochs=1)
     loss, accuracy = model.evaluate(x_validation, y_validation, verbose=1)
-    print(f"Epoch: {(i + 1) * 10}")
+    print(f"Epoch: {i}")
     print(f"loss: {loss}")
     print(f"Acurácia: {accuracy}%\n")
-    if loss < menor_loss:
-       menor_loss = loss
-       menor_i = (i + 1)*10
-       model.save(f"modelos_gerados/t{N_TESTE}_n{N_NEURONIOS}_e{menor_i}_{DADO}_modelo.keras")
+    menor_loss = loss
+    menor_i = (i + 1)*10
+    model.save(f"modelos_gerados/modelo.keras")
 
 
 print(f"menor loss: {menor_loss} ({menor_i})\n")
