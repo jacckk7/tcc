@@ -6,10 +6,10 @@ from sklearn.model_selection import train_test_split
 tf.keras.config.disable_interactive_logging()
 
 #Anotações para testes
-N_TESTE = 6
+N_TESTE = 8
 N_NEURONIOS = 128
-DADO = "pedro"
-EPOCHS=360
+DADO = "breno"
+EPOCHS = 1000
 
 ########-NÃO MUDAR-##########
 NUMERO_LETRAS = 26
@@ -24,7 +24,7 @@ alfabeto = {
     "v": 21, "w": 22, "x": 23, "y": 24, "z": 25
 }
 
-for chave, valores in vs.vetor_world_pedro.items():
+for chave, valores in vs.vetor_world_breno.items():
   for valor in valores:
     x.append(np.array(valor).flatten())
     y.append(alfabeto.get(chave))
