@@ -17,10 +17,10 @@ if __name__ == "__main__":
 
     parse.add_argument("vetor", type=str, help="Nome do arquivo do vetor .npy")
 
-    args = parse.parse_args()
+    #args = parse.parse_args()
 
     try:
-        vetor = np.load(f"{output_dir}/{args.vetor}")
+        vetor = np.load(f"{output_dir}/graph_1000_epochs.npy")
 
         eixo_x = np.arange(1, len(vetor) + 1)
 
