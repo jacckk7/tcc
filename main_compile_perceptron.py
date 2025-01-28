@@ -10,7 +10,7 @@ tf.keras.config.disable_interactive_logging()
 
 #Anotações para testes
 LIMITE_MENOR_LOSS = 100
-DADO = "breno"               #"pedro", "breno" ou "BP"
+DADO = "BP"               #"pedro", "breno" ou "BP"
 
 ########-NÃO MUDAR-##########
 NUMERO_LETRAS = 26
@@ -31,7 +31,7 @@ if DADO == "pedro":
 elif DADO == "breno":
     vetor = vs.vetor_world_breno.items()
 elif DADO == "BP":
-    vetor == ln.vetor_word.items()
+    vetor = ln.vetor_word.items()
 else:
     print("ERRO - coloque o dado correto")
     exit()
@@ -59,7 +59,7 @@ n_neuronios = [10, 25, 50, 100, 150, 200, 300, 400, 500, 750, 1000]
 
 for i in n_neuronios:
     print("#" * 30)
-    print(f"TREINO N {i}")
+    print(f"TREINO N {i} - {DADO}")
     
     model = tf.keras.Sequential([
     tf.keras.layers.Dense(i, activation=ATIVACAO), 
@@ -100,7 +100,7 @@ for i in n_neuronios:
     print(f"Menor loss: {menor_loss}")
     print(f"Acurácia: {accuracy}%")
     
-    print(f"TESTE N {i}")
+    print(f"TESTE N {i} - {DADO}")
 
     model = load_model(f"modelos_gerados/modelo_{DADO}_{i}_n.keras")
 
