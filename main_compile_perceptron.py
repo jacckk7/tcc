@@ -4,12 +4,13 @@ import letters_numbers as ln
 import tensorflow as tf
 import main_grafico_loss as mgl
 from sklearn.model_selection import train_test_split
+from tensorflow.keras.models import load_model
 
 tf.keras.config.disable_interactive_logging()
 
 #Anotações para testes
-N_TESTE = 8
-DADO = "breno"
+LIMITE_MENOR_LOSS = 100
+DADO = "breno"               #"pedro", "breno" ou "BP"
 
 ########-NÃO MUDAR-##########
 NUMERO_LETRAS = 26
@@ -24,7 +25,19 @@ alfabeto = {
     "v": 21, "w": 22, "x": 23, "y": 24, "z": 25
 }
 
-for chave, valores in ln.vetor_word.items():
+vetor = None
+if DADO == "pedro":
+    vetor = vs.vetor_world_pedro.items()
+elif DADO == "breno":
+    vetor = vs.vetor_world_breno.items()
+elif DADO == "BP":
+    vetor == ln.vetor_word.items()
+else:
+    print("ERRO - coloque o dado correto")
+    exit()
+    
+
+for chave, valores in vetor:
   for valor in valores:
     x.append(np.array(valor).flatten())
     y.append(alfabeto.get(chave))
@@ -40,13 +53,13 @@ x_validation, x_test, y_validation, y_test = train_test_split(x_test, y_test, te
 
 
 #########################TREINAMENTO###########################
-print("#" * 30)
-print("TREINO")
 
 n_neuronios = [10, 25, 50, 100, 150, 200, 300, 400, 500, 750, 1000]
 
 
 for i in n_neuronios:
+    print("#" * 30)
+    print(f"TREINO N {i}")
     
     model = tf.keras.Sequential([
     tf.keras.layers.Dense(i, activation=ATIVACAO), 
@@ -58,38 +71,43 @@ for i in n_neuronios:
               metrics=['accuracy'])
     
     menor_loss = 100
+    menor_loss_epoch = 0
     count_loss = 0
     count_epoch = 0
     n_loss = []
     
     while(True):
-    
+        count_epoch += 1
+        print(f"\rTreinando modelo {i}n: {count_epoch}e", end="")
         model.fit(x_train, y_train, epochs=1)
         loss, accuracy = model.evaluate(x_validation, y_validation, verbose=1)
         n_loss.append(loss)
         
         if loss < menor_loss:
             menor_loss = loss
+            menor_loss_epoch = count_epoch
             count_loss = 0
-            count_epoch += 1
-            model.save(f"modelos_gerados/modelo_BP_{i}_n.keras")
+            model.save(f"modelos_gerados/modelo_{DADO}_{i}_n.keras")
+            
         else:
             count_loss += 1
-            
-        if count_loss > 4:
+
+        if count_loss > LIMITE_MENOR_LOSS:
             break
 
-    print(f"Neurônios: {i}")
-    print(f"Epoch: {count_epoch}")
+    print(f"\nNeurônios: {i}")
+    print(f"Epoch menor: {menor_loss_epoch}")
     print(f"Menor loss: {menor_loss}")
-    print(f"Acurácia: {accuracy}%\n")
+    print(f"Acurácia: {accuracy}%")
     
-    print("#" * 30)
-    print("TESTE")
-    # Avaliar o modelo no conjunto de teste
+    print(f"TESTE N {i}")
+
+    model = load_model(f"modelos_gerados/modelo_{DADO}_{i}_n.keras")
+
     loss, accuracy = model.evaluate(x_test, y_test, verbose=1)
-    print(f"Loss: {loss}")
+    print(f"Loss no teste: {loss}")
     print(f"Acurácia no teste: {accuracy * 100:.2f}%")
     
-    mgl.salvar_vetor(f"graph_BP_{i}_n", n_loss)
+    mgl.salvar_vetor(f"graph_{DADO}_{i}_n", n_loss)
+    print("#" * 30)
     
