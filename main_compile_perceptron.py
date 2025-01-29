@@ -10,7 +10,7 @@ tf.keras.config.disable_interactive_logging()
 
 #Anotações para testes
 LIMITE_MENOR_LOSS = 100
-DADO = "BP"               #"pedro", "breno" ou "BP"
+DADO = "breno"               #"pedro", "breno" ou "BP"
 
 ########-NÃO MUDAR-##########
 NUMERO_LETRAS = 26
