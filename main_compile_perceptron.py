@@ -10,7 +10,8 @@ tf.keras.config.disable_interactive_logging()
 
 #Anotações para testes
 LIMITE_MENOR_LOSS = 100
-DADO = "breno"               #"pedro", "breno" ou "BP"
+
+DADO = "pedro"               #"pedro", "breno" ou "BP"
 
 ########-NÃO MUDAR-##########
 NUMERO_LETRAS = 26
@@ -34,6 +35,9 @@ elif DADO == "BP":
     vetor = ln.vetor_word.items()
 else:
     print("ERRO - coloque o dado correto")
+    exit()
+
+if input(f"Utilizando dados {DADO}. Confirmar (s/n): ") != "s":
     exit()
     
 
