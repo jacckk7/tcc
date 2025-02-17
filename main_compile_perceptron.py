@@ -50,9 +50,9 @@ y = np.array(y)
 
 # Dividir em treino e teste
 # 40% Testes - 30% validacao - 30% Testes
-x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.4, random_state=42)
+x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.4)
 
-x_validation, x_test, y_validation, y_test = train_test_split(x_test, y_test, test_size=0.5, random_state=42)
+x_validation, x_test, y_validation, y_test = train_test_split(x_test, y_test, test_size=0.5)
 
 
 #########################TREINAMENTO###########################
