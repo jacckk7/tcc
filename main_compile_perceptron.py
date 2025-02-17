@@ -10,6 +10,7 @@ tf.keras.config.disable_interactive_logging()
 
 #Anotações para testes
 LIMITE_MENOR_LOSS = 100
+
 DADO = "pedro"               #"pedro", "breno" ou "BP"
 
 ########-NÃO MUDAR-##########
