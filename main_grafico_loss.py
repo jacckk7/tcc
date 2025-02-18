@@ -24,7 +24,7 @@ if __name__ == "__main__":
 
         eixo_x = np.arange(1, len(vetor) + 1)
 
-        plt.plot(eixo_x, vetor, marker='o', linestyle='-', color='b', label='Valores')
+        plt.plot(eixo_x, vetor, linestyle='-', color='b', label='Valores')
 
         plt.title("Gráfico dos Valores do Vetor")
         plt.xlabel("Épocas (X)")
