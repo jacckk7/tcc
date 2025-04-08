@@ -3,7 +3,7 @@ import mediapipe as mp
 import numpy as np
 
 
-NOME_ARQUIVO_VIDEO = 'video_1_menor.mp4'
+NOME_ARQUIVO_VIDEO = 'IMG_0091.MOV'
 
 cap = cv2.VideoCapture(NOME_ARQUIVO_VIDEO)
 
