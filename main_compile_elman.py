@@ -9,11 +9,11 @@ from tensorflow.keras.models import load_model
 # Desabilita logs interativos do Keras
 tf.keras.config.disable_interactive_logging()
 
-# Anota��es para testes
+# Anotações para testes
 LIMITE_MENOR_LOSS = 1000
-DADO = "BP"  # "pedro", "breno" ou "BP"
+DADO = "breno"  # "pedro", "breno" ou "BP"
 
-########-N�O MUDAR-##########
+########-NÃO MUDAR-##########
 NUMERO_LETRAS = 26
 ATIVACAO = 'relu'
 #############################
@@ -50,7 +50,7 @@ for chave, valores in vetor:
 x = np.array(x)
 y = np.array(y)
 
-# Dividir em treino, valida��o e teste
+# Dividir em treino, validaçãoo e teste
 x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.4)
 x_validation, x_test, y_validation, y_test = train_test_split(x_test, y_test, test_size=0.5)
 
@@ -103,17 +103,17 @@ for i in n_neuronios:
         if count_loss > LIMITE_MENOR_LOSS:
             break
 
-    print(f"\nNeur�nios: {i}")
+    print(f"\nNeurônios: {i}")
     print(f"Epoch menor: {menor_loss_epoch}")
     print(f"Menor loss: {menor_loss}")
-    print(f"Acur�cia: {accuracy}%")
+    print(f"Acurácia: {accuracy}%")
 
     print(f"TESTE N {i} - {DADO}")
 
     model = load_model(f"modelos_gerados/modelo_elman_{DADO}_{i}_n.keras")
     loss, accuracy = model.evaluate(x_test, y_test, verbose=1)
     print(f"Loss no teste: {loss}")
-    print(f"Acur�cia no teste: {accuracy * 100:.2f}%")
+    print(f"Acurácia no teste: {accuracy * 100:.2f}%")
 
     mgl.salvar_vetor(f"graph_elman_{DADO}_{i}_n", n_loss)
     print("#" * 30)
