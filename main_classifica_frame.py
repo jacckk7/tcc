@@ -2,7 +2,7 @@ import mediapipe as mp
 import cv2
 import videos_to_letters
 
-CAMINHO_VIDEO = "./videos_fatiados/15/pessoa2video7-15.mp4"
+CAMINHO_VIDEO = "./videos_alfabeto/20250506_174336.mp4"
 CAMINHO_ARQUIVO = "./videos_to_letters.py"
 
 mp_drawing = mp.solutions.drawing_utils
@@ -50,7 +50,7 @@ while not acaba:
         acaba = True
 
 vetores = videos_to_letters.vetores
-classificacoes = videos_to_letters.calssificacao
+classificacoes = videos_to_letters.classificacao
 
 vetores.append(vetores_por_frame)
 classificacoes.append(classificacao_por_frame)
@@ -59,5 +59,9 @@ print("atualizando arquivo...")
 
 with open(CAMINHO_ARQUIVO, "w", encoding="utf-8") as arquivo:
     arquivo.write(f"vetores = {repr(vetores)}\n")
-    arquivo.write(f"calssificacao = {repr(classificacoes)}\n")
+    arquivo.write(f"classificacao = {repr(classificacoes)}\n")
+
+print("Arquivo atualizado com sucesso!")
+print("Tabanho final vetores: " + len(vetores))
+print("Tabanho final classificacao: " + len(classificacoes))
 
