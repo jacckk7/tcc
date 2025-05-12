@@ -1,5 +1,5 @@
 import numpy as np
-import videos_to_letters
+import videos_to_letters_breno
 import tensorflow as tf
 import main_grafico_loss as mgl
 from sklearn.model_selection import train_test_split
@@ -14,7 +14,7 @@ else:
     print("Não está utilizando GPU :(")
 
 
-LIMITE_MENOR_LOSS = 1000
+LIMITE_MENOR_LOSS = 100
 ########-NÃO MUDAR-##########
 NUMERO_LETRAS = 27
 ATIVACAO = 'relu'
@@ -27,11 +27,11 @@ alfabeto = {
     "a": 0, "b": 1, "c": 2, "d": 3, "e": 4, "f": 5, "g": 6,
     "h": 7, "i": 8, "j": 9, "k": 10, "l": 11, "m": 12, "n": 13,
     "o": 14, "p": 15, "q": 16, "r": 17, "s": 18, "t": 19, "u": 20,
-    "v": 21, "w": 22, "x": 23, "y": 24, "z": 25, "*": 26 
+    "v": 21, "w": 22, "x": 23, "y": 24, "z": 25, "-": 26 
 }
 
-videos_vetores = videos_to_letters.vetores
-videos_classificacoes = videos_to_letters.classificacao
+videos_vetores = videos_to_letters_breno.vetores
+videos_classificacoes = videos_to_letters_breno.classificacao
 # Dividir em treino, validaçãoo e teste
 videos_vetores_train, videos_vetores_test, videos_classificacoes_train, videos_classificacoes_test = train_test_split(videos_vetores, videos_classificacoes, test_size=0.4)
 videos_vetores_validation, videos_vetores_test, videos_classificacoes_validation, videos_classificacoes_test = train_test_split(videos_vetores_test, videos_classificacoes_test, test_size=0.5)
