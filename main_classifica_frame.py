@@ -2,8 +2,15 @@ import mediapipe as mp
 import cv2
 import videos_to_letters
 
-CAMINHO_VIDEO = "./videos_alfabeto/20250506_174336.mp4"
+CAMINHO_VIDEO = "./videos_alfabeto/20250506_175416.mp4"
 CAMINHO_ARQUIVO = "./videos_to_letters.py"
+
+vetores = videos_to_letters.vetores
+classificacoes = videos_to_letters.classificacao
+
+print(f"Vídeo: {CAMINHO_VIDEO}")
+print(f"Tamanho inicial vetores: {len(vetores)}")
+print(f"Tamanho inicial classificacao: {len(classificacoes)}")
 
 mp_drawing = mp.solutions.drawing_utils
 mp_hands = mp.solutions.hands
@@ -49,9 +56,6 @@ while not acaba:
         print("Fim")
         acaba = True
 
-vetores = videos_to_letters.vetores
-classificacoes = videos_to_letters.classificacao
-
 vetores.append(vetores_por_frame)
 classificacoes.append(classificacao_por_frame)
 
@@ -62,6 +66,6 @@ with open(CAMINHO_ARQUIVO, "w", encoding="utf-8") as arquivo:
     arquivo.write(f"classificacao = {repr(classificacoes)}\n")
 
 print("Arquivo atualizado com sucesso!")
-print("Tabanho final vetores: " + len(vetores))
-print("Tabanho final classificacao: " + len(classificacoes))
+print(f"Tamanho final vetores: {len(vetores)}")
+print(f"Tamanho final classificacao: {len(classificacoes)}")
 
