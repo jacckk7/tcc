@@ -13,7 +13,7 @@ alfabeto = {
     "v": 21, "w": 22, "x": 23, "y": 24, "z": 25
 }
 
-cap = cv2.VideoCapture("videos_fatiados/pessoa2video3-15.mp4")
+cap = cv2.VideoCapture("videos_alfabeto/15.MOV")
 if not cap.isOpened():
     print("Erro ao abrir o vídeo.")
     exit()
@@ -62,7 +62,7 @@ while True:
     break
 
     
-cv2.destroyAllWindows
+cv2.destroyAllWindows()
 
 #      if (letra_prevista != ultima_letra):
 #        print(f"\rLetra prevista: {letra_prevista}", end="")
