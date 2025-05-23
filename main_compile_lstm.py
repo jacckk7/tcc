@@ -2,7 +2,7 @@
 
 
 import numpy as np
-import videos_to_letters
+import dados.videos_to_letters_pedro as videos_to_letters_pedro
 import tensorflow as tf
 import main_grafico_loss as mgl
 from sklearn.model_selection import train_test_split
@@ -17,14 +17,14 @@ else:
     print("Não está utilizando GPU :(")
 
 
+TIMESTEPS = 35   # Definindo o tamanho da janela (timesteps)
 LIMITE_MENOR_LOSS = 1000
+DADO = "pedro"
+
 ########-NÃO MUDAR-##########
 NUMERO_LETRAS = 27
 ATIVACAO = 'relu'
 #############################
-
-# Definindo o tamanho da janela (timesteps)
-TIMESTEPS = 10   # você pode ajustar conforme necessidade
 
 # Preparando os dados
 x = []  # Vetores de landmarks
@@ -36,8 +36,23 @@ alfabeto = {
     "v": 21, "w": 22, "x": 23, "y": 24, "z": 25, "*": 26 
 }
 
-videos_vetores = videos_to_letters.vetores
-videos_classificacoes = videos_to_letters.classificacao
+
+videos_vetores = None
+videos_classificacoes = None
+if DADO == "pedro":
+    videos_vetores = videos_to_letters_pedro.vetores
+    videos_classificacoes = videos_to_letters_pedro.classificacao
+elif DADO == "breno":
+    #coloca seus dados aqui, breno
+    #videos_vetores = seu_dado.vetores
+    #videos_classificacoes = seu_dado.classificacao
+    exit()
+else:
+    print("ERRO - coloque o dado correto")
+    exit()
+if input(f"Utilizando dados {DADO}. Confirmar (s/n): ") != "s":
+    exit()
+
 # Dividir em treino, validaçãoo e teste
 videos_vetores_train, videos_vetores_test, videos_classificacoes_train, videos_classificacoes_test = train_test_split(videos_vetores, videos_classificacoes, test_size=0.4)
 videos_vetores_validation, videos_vetores_test, videos_classificacoes_validation, videos_classificacoes_test = train_test_split(videos_vetores_test, videos_classificacoes_test, test_size=0.5)
@@ -117,7 +132,7 @@ for i in n_neuronios:
             menor_loss = loss
             menor_loss_epoch = count_epoch
             count_loss = 0
-            model.save(f"modelos_gerados/modelo_lstm_{i}_n.keras")
+            model.save(f"modelos_gerados/modelo_lstm_TS{TIMESTEPS}_{DADO}_{i}_n.keras")
         else:
             count_loss += 1
 
@@ -131,7 +146,7 @@ for i in n_neuronios:
 
     print(f"TESTE N {i}")
 
-    model = load_model(f"modelos_gerados/modelo_lstm_{i}_n.keras")
+    model = load_model(f"modelos_gerados/modelo_lstm_TS{TIMESTEPS}_{DADO}_{i}_n.keras")
     loss, accuracy = model.evaluate(tx_test, ty_test, verbose=1)
     print(f"Loss no teste: {loss}")
     print(f"Acurácia no teste: {accuracy * 100:.2f}%")

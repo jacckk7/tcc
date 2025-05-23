@@ -8,7 +8,6 @@ os.makedirs(output_dir, exist_ok=True)
 
 def salvar_vetor (nome_arquivo, vetor):
     np.save(f"{output_dir}/{nome_arquivo}.npy", vetor)
-    print("----VETOR LOSS SALVO----")
     return
 
 if __name__ == "__main__":
@@ -21,7 +20,6 @@ if __name__ == "__main__":
 
     try:
         vetor = np.load(f"{output_dir}/{args.vetor}")
-
         eixo_x = np.arange(1, len(vetor) + 1)
 
         plt.plot(eixo_x, vetor, linestyle='-', color='b', label='Valores')
@@ -34,7 +32,9 @@ if __name__ == "__main__":
         plt.tight_layout()
 
         # Exibir o gráfico
-        plt.show()
+        plt.savefig(f"{output_dir}/grafico_{args.vetor}.png")
+        print("imagem gráfico salva!")
+        #plt.show()
 
 
     except Exception as e:

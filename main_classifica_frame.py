@@ -1,9 +1,9 @@
 import mediapipe as mp
 import cv2
-import videos_to_letters
+import dados.videos_to_letters_ABC_espelhado as videos_to_letters
 
-CAMINHO_VIDEO = "./videos_alfabeto/20250506_175416.mp4"
-CAMINHO_ARQUIVO = "./videos_to_letters.py"
+CAMINHO_VIDEO = "./ABC/20250414_141656_espelhado.mp4"
+CAMINHO_ARQUIVO = "./dados/videos_to_letters_ABC_espelhado.py"
 
 vetores = videos_to_letters.vetores
 classificacoes = videos_to_letters.classificacao

@@ -13,7 +13,7 @@ alfabeto_invertido = {
     21: 'v', 22: 'w', 23: 'x', 24: 'y', 25: 'z', 26: '*'
 }
 
-cap = cv2.VideoCapture("videos_fatiados/15/pessoa2video3-15.mp4")
+cap = cv2.VideoCapture("videos_alfabeto/20250512_221413.mp4")
 if not cap.isOpened():
     print("Erro ao abrir o vídeo.")
     exit()
@@ -22,7 +22,7 @@ print("video capturado")
 mp_hands = mp.solutions.hands
 hand = mp_hands.Hands(max_num_hands=1)
 
-model = load_model("modelos_gerados/modelo_elman_150_n.keras")
+model = load_model("modelos_gerados/modelo_elman_TS10_pedro_100_n.keras")
 print("modelo carregado")
 
 sequence = []
