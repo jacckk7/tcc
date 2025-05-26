@@ -1,5 +1,5 @@
 import numpy as np
-import videos_to_letters_breno
+import dados.videos_to_letters_pedro as videos_to_letters_pedro
 import tensorflow as tf
 import main_grafico_loss as mgl
 from sklearn.model_selection import train_test_split
@@ -14,7 +14,10 @@ else:
     print("Não está utilizando GPU :(")
 
 
-LIMITE_MENOR_LOSS = 100
+TIMESTEPS = 20   # Definindo o tamanho da janela (timesteps)
+LIMITE_MENOR_LOSS = 1000
+DADO = "pedro"
+
 ########-NÃO MUDAR-##########
 NUMERO_LETRAS = 27
 ATIVACAO = 'relu'
@@ -30,14 +33,25 @@ alfabeto = {
     "v": 21, "w": 22, "x": 23, "y": 24, "z": 25, "-": 26 
 }
 
-videos_vetores = videos_to_letters_breno.vetores
-videos_classificacoes = videos_to_letters_breno.classificacao
+videos_vetores = None
+videos_classificacoes = None
+if DADO == "pedro":
+    videos_vetores = videos_to_letters_pedro.vetores
+    videos_classificacoes = videos_to_letters_pedro.classificacao
+elif DADO == "breno":
+    #coloca seus dados aqui, breno
+    #videos_vetores = seu_dado.vetores
+    #videos_classificacoes = seu_dado.classificacao
+    exit()
+else:
+    print("ERRO - coloque o dado correto")
+    exit()
+if input(f"Utilizando dados {DADO} com TIMESTEPS = {TIMESTEPS}. Confirmar (s/n): ") != "s":
+    exit()
+
 # Dividir em treino, validaçãoo e teste
 videos_vetores_train, videos_vetores_test, videos_classificacoes_train, videos_classificacoes_test = train_test_split(videos_vetores, videos_classificacoes, test_size=0.4)
 videos_vetores_validation, videos_vetores_test, videos_classificacoes_validation, videos_classificacoes_test = train_test_split(videos_vetores_test, videos_classificacoes_test, test_size=0.5)
-
-# Definindo o tamanho da janela (timesteps)
-TIMESTEPS = 10   # você pode ajustar conforme necessidade
 
 # Função para transformar os dados de vídeos em sequências fixas para RNN
 def preparar_dados(videos, labels):
@@ -71,7 +85,7 @@ print("Validation:", tx_validation.shape, ty_validation.shape)
 print("Test:", tx_test.shape, ty_test.shape)
 
 #########################TREINAMENTO###########################
-n_neuronios = [10, 25, 50, 100, 150, 200, 300, 400, 500, 750, 1000]
+n_neuronios = [100]
 
 for i in n_neuronios:
     print("#" * 30)
@@ -93,6 +107,7 @@ for i in n_neuronios:
     menor_loss_epoch = 0
     count_loss = 0
     count_epoch = 0
+    n_loss = []
 
     while True:
         count_epoch += 1
@@ -110,11 +125,13 @@ for i in n_neuronios:
         loss = history.history['val_loss'][0]
         accuracy = history.history['val_accuracy'][0]
 
+        n_loss.append(loss)
+
         if loss < menor_loss:
             menor_loss = loss
             menor_loss_epoch = count_epoch
             count_loss = 0
-            model.save(f"modelos_gerados/modelo_elman_{i}_n.keras")
+            model.save(f"modelos_gerados/modelo_elman_TS{TIMESTEPS}_{DADO}_{i}_n.keras")
         else:
             count_loss += 1
 
@@ -128,9 +145,11 @@ for i in n_neuronios:
 
     print(f"TESTE N {i}")
 
-    model = load_model(f"modelos_gerados/modelo_elman_{i}_n.keras")
+    model = load_model(f"modelos_gerados/modelo_elman_TS{TIMESTEPS}_{DADO}_{i}_n.keras")
     loss, accuracy = model.evaluate(tx_test, ty_test, verbose=1)
     print(f"Loss no teste: {loss}")
     print(f"Acurácia no teste: {accuracy * 100:.2f}%")
+
+    mgl.salvar_vetor(f"graph_elman_TS{TIMESTEPS}_{DADO}_{i}_n", n_loss)
 
     print("#" * 30)

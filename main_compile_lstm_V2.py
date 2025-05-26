@@ -1,9 +1,8 @@
 ## ESSE SCRIPT GERA MODELOS SEM TIMESTEPS 
-
-
 import numpy as np
 import videos_to_letters
 import tensorflow as tf
+tf.config.set_visible_devices([], 'GPU')
 from sklearn.model_selection import train_test_split
 from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing.sequence import pad_sequences
@@ -72,12 +71,13 @@ for i in n_neuronios:
     print(f"TREINO N {i}")
 
     # Modelo de rede LSTM
+    print(f"Gerando modelo N{i}")
     model = tf.keras.Sequential([
         tf.keras.layers.Masking(mask_value=0., input_shape=(None, tx_train[0].shape[1])),
         tf.keras.layers.LSTM(i, activation=ATIVACAO, return_sequences=True),
         tf.keras.layers.TimeDistributed(tf.keras.layers.Dense(NUMERO_LETRAS, activation='softmax'))
     ])
-
+    print("Compilando modelo")
     model.compile(
         optimizer='adam',
         loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=False),
@@ -101,6 +101,8 @@ for i in n_neuronios:
             validation_data=(tx_validation, ty_validation),
             shuffle=False,
             verbose=1)
+        
+        print(f"\rTreinando modelo {i}n: {count_epoch}e SUCESSO", end="")
         
         loss = history.history['val_loss'][0]
         accuracy = history.history['val_accuracy'][0]
