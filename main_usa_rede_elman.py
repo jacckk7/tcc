@@ -64,7 +64,7 @@ while True:
     break
 
     
-cv2.destroyAllWindows
+cv2.destroyAllWindows()
 
 #      if (letra_prevista != ultima_letra):
 #        print(f"\rLetra prevista: {letra_prevista}", end="")

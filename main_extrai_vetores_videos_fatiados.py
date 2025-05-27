@@ -2,35 +2,6 @@ import cv2
 import mediapipe as mp
 import numpy as np
 
-vetores_palavras = {
-    "amanda" : [],
-    "beatriz": [],
-    "camila": [],
-    "dublin": [],
-    "eduardo": [],
-    "fernando": [],
-    "gabriela": [],
-    "helsinque": [],
-    "itália": [],
-    "jacarta": [],
-    "kyoto": [],
-    "luxemburgo": [],
-    "mariana": [],
-    "nairobi": [],
-    "oslo": [],
-    "portugal": [],
-    "qatar": [],
-    "raphael": [],
-    "samuel": [],
-    "tokyo": [],
-    "uruguai": [],
-    "vancouver": [],
-    "william": [],
-    "xangai": [],
-    "yuri": [],
-    "zimbabwe": []
-}
-
 numeros_palavras = {
     1: "amanda",
     2: "beatriz",
@@ -64,14 +35,45 @@ videosFaltando = ["pessoa4video10-03", "pessoa1video7-08", "pessoa3video8-22"]
 
 CAMINHO = './videos_fatiados/'
 
-for palavra in range(1, 27):
-    PASTA = f"{palavra}/"
+for pessoa in range(1, 5):
+    PESSOA = f"pessoa{pessoa}"
     
-    for pessoa in range(1, 5):
-        PESSOA = f"pessoa{pessoa}"
+    vetores_palavras = {
+        "amanda" : [],
+        "beatriz": [],
+        "camila": [],
+        "dublin": [],
+        "eduardo": [],
+        "fernando": [],
+        "gabriela": [],
+        "helsinque": [],
+        "itália": [],
+        "jacarta": [],
+        "kyoto": [],
+        "luxemburgo": [],
+        "mariana": [],
+        "nairobi": [],
+        "oslo": [],
+        "portugal": [],
+        "qatar": [],
+        "raphael": [],
+        "samuel": [],
+        "tokyo": [],
+        "uruguai": [],
+        "vancouver": [],
+        "william": [],
+        "xangai": [],
+        "yuri": [],
+        "zimbabwe": []
+    }
+    
+    for palavra in range(1, 27):
+        PASTA = f"{palavra}/"
         
         for video in range(1, 11):
             VIDEO = f"video{video}"
+            
+            vetor_video = []
             
             if palavra < 10:
                 PALAVRA = f"-0{palavra}.mp4"
@@ -113,7 +115,7 @@ for palavra in range(1, 27):
                             atual_point.append(handLandmarks.landmark[i].z)
 
                 
-                        vetores_palavras[numeros_palavras[palavra]].append(atual_point)      
+                        vetor_video.append(atual_point)      
                         count_frames += 1
                         print(f"\r{PESSOA+VIDEO+PALAVRA} -> Frames coletados: {count_frames}", end="")
 
@@ -124,10 +126,12 @@ for palavra in range(1, 27):
                     print("\nVideo concluido!")
                     
             cv2.destroyAllWindows()
+            
+            vetores_palavras[numeros_palavras[palavra]].append(vetor_video)
+        
+            
+    nome_arquivo = f"dados_pessoa_{PESSOA}.py"
 
-
-nome_arquivo = "dados.py"
-
-with open(nome_arquivo, "w", encoding="utf-8") as arquivo:
-    # Escreve o dicionário como uma variável
-    arquivo.write(f"vetores_palavras = {repr(vetores_palavras)}\n")
+    with open(nome_arquivo, "w", encoding="utf-8") as arquivo:
+        # Escreve o dicionário como uma variável
+        arquivo.write(f"vetores_palavras = {repr(vetores_palavras)}\n")
