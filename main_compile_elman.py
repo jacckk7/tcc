@@ -15,7 +15,7 @@ else:
     print("Não está utilizando GPU :(")
 
 
-TIMESTEPS = 35   # Definindo o tamanho da janela (timesteps)
+TIMESTEPS = 25   # Definindo o tamanho da janela (timesteps)
 LIMITE_MENOR_LOSS = 1000
 DADO = "breno"
 
@@ -23,6 +23,27 @@ DADO = "breno"
 NUMERO_LETRAS = 27
 ATIVACAO = 'relu'
 #############################
+
+# Função para transformar os dados de vídeos em sequências fixas para RNN
+def preparar_dados(videos, labels):
+    x, y = [], []
+    for video, rotulos in zip(videos, labels):
+        vetores = np.array(video)  # shape: (frames, 63)
+        rotulos_idx = [alfabeto[r] for r in rotulos]
+
+        # Padding se necessário
+        resto = len(vetores) % TIMESTEPS
+        if resto != 0:
+            padding_frames = TIMESTEPS - resto
+            vetores = np.vstack([vetores, np.zeros((padding_frames, vetores.shape[1]))])
+            rotulos_idx += [26] * padding_frames  # usa '*' como padding
+
+        # Dividir em blocos de timesteps
+        for i in range(0, len(vetores), TIMESTEPS):
+            x.append(vetores[i:i+TIMESTEPS])
+            y.append(rotulos_idx[i:i+TIMESTEPS])
+
+    return np.array(x), np.array(y)
 
 # Preparando os dados
 x = []  # Vetores de landmarks
@@ -48,107 +69,121 @@ else:
 if input(f"Utilizando dados {DADO} com TIMESTEPS = {TIMESTEPS}. Confirmar (s/n): ") != "s":
     exit()
 
-# Dividir em treino, validaçãoo e teste
-videos_vetores_train, videos_vetores_test, videos_classificacoes_train, videos_classificacoes_test = train_test_split(videos_vetores, videos_classificacoes, test_size=0.4)
-videos_vetores_validation, videos_vetores_test, videos_classificacoes_validation, videos_classificacoes_test = train_test_split(videos_vetores_test, videos_classificacoes_test, test_size=0.5)
+num_amostras = len(videos_vetores)
+indices = np.arange(num_amostras)
 
-# Função para transformar os dados de vídeos em sequências fixas para RNN
-def preparar_dados(videos, labels):
-    x, y = [], []
-    for video, rotulos in zip(videos, labels):
-        vetores = np.array(video)  # shape: (frames, 63)
-        rotulos_idx = [alfabeto[r] for r in rotulos]
+for kfold in range(5):
 
-        # Padding se necessário
-        resto = len(vetores) % TIMESTEPS
-        if resto != 0:
-            padding_frames = TIMESTEPS - resto
-            vetores = np.vstack([vetores, np.zeros((padding_frames, vetores.shape[1]))])
-            rotulos_idx += [26] * padding_frames  # usa '*' como padding
-
-        # Dividir em blocos de timesteps
-        for i in range(0, len(vetores), TIMESTEPS):
-            x.append(vetores[i:i+TIMESTEPS])
-            y.append(rotulos_idx[i:i+TIMESTEPS])
-
-    return np.array(x), np.array(y)
-
-# Processando os dados
-tx_train, ty_train = preparar_dados(videos_vetores_train, videos_classificacoes_train)
-tx_validation, ty_validation = preparar_dados(videos_vetores_validation, videos_classificacoes_validation)
-tx_test, ty_test = preparar_dados(videos_vetores_test, videos_classificacoes_test)
-
-# Verifica os shapes
-print("Train:", tx_train.shape, ty_train.shape)
-print("Validation:", tx_validation.shape, ty_validation.shape)
-print("Test:", tx_test.shape, ty_test.shape)
-
-#########################TREINAMENTO###########################
-n_neuronios = [100]
-
-for i in n_neuronios:
     print("#" * 30)
-    print(f"TREINO N {i}")
+    print(f"KFOLD {kfold + 1}")
 
-    # Modelo de rede Elman com SimpleRNN
-    model = tf.keras.Sequential([
-        tf.keras.layers.SimpleRNN(i, activation=ATIVACAO, return_sequences=True, input_shape=(TIMESTEPS, tx_train.shape[2])),
-        tf.keras.layers.TimeDistributed(tf.keras.layers.Dense(NUMERO_LETRAS, activation='softmax'))
-    ])
+    # Dividir em treino, validaçãoo e teste (Treino 50 Validacao 20 Teste 30)
 
-    model.compile(
-        optimizer='adam',
-        loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=False),
-        metrics=['accuracy']
-    )
-
-    menor_loss = 100
-    menor_loss_epoch = 0
-    count_loss = 0
-    count_epoch = 0
-    n_loss = []
-
+    foldStr = ""
     while True:
-        count_epoch += 1
-        print(f"\rTreinando modelo {i}n: {count_epoch}e", end="")
+        idx_train, idx_rest = train_test_split(indices, test_size=0.5)
+        idx_val, idx_test = train_test_split(idx_rest, test_size=0.6)
+        print("Treinamento:", list(idx_train))
+        print("Validação:", list(idx_val))
+        print("Teste:", list(idx_test))
+        foldStr += "tr"
+        for i in idx_train: foldStr = foldStr + str(i)
+        foldStr += "v"
+        for i in idx_val: foldStr = foldStr + str(i)
+        foldStr += "te"
+        for i in idx_test: foldStr = foldStr + str(i)
+        print(f"configuração {foldStr}")
+        if input("Confirmar? (s/n) : ") == "s" : break
+        foldStr = ""
 
-        history = model.fit(
-            tx_train,
-            ty_train,
-            epochs=1,
-            batch_size=32,
-            validation_data=(tx_validation, ty_validation),
-            shuffle=False,
-            verbose=1)
-        
-        loss = history.history['val_loss'][0]
-        accuracy = history.history['val_accuracy'][0]
 
-        n_loss.append(loss)
 
-        if loss < menor_loss:
-            menor_loss = loss
-            menor_loss_epoch = count_epoch
-            count_loss = 0
-            model.save(f"modelos_gerados/modelo_elman_TS{TIMESTEPS}_{DADO}_{i}_n.keras")
-        else:
-            count_loss += 1
+    videos_vetores_train = [videos_vetores[i] for i in idx_train]
+    videos_classificacoes_train = [videos_classificacoes[i] for i in idx_train]
 
-        if count_loss > LIMITE_MENOR_LOSS:
-            break
+    videos_vetores_validation = [videos_vetores[i] for i in idx_val]
+    videos_classificacoes_validation = [videos_classificacoes[i] for i in idx_val]
 
-    print(f"\nNeurônios: {i}")
-    print(f"Epoch menor: {menor_loss_epoch}")
-    print(f"Menor loss: {menor_loss}")
-    print(f"Acurácia: {accuracy}%")
+    videos_vetores_test = [videos_vetores[i] for i in idx_test]
+    videos_classificacoes_test = [videos_classificacoes[i] for i in idx_test]
 
-    print(f"TESTE N {i}")
+    # Processando os dados
+    tx_train, ty_train = preparar_dados(videos_vetores_train, videos_classificacoes_train)
+    tx_validation, ty_validation = preparar_dados(videos_vetores_validation, videos_classificacoes_validation)
+    tx_test, ty_test = preparar_dados(videos_vetores_test, videos_classificacoes_test)
 
-    model = load_model(f"modelos_gerados/modelo_elman_TS{TIMESTEPS}_{DADO}_{i}_n.keras")
-    loss, accuracy = model.evaluate(tx_test, ty_test, verbose=1)
-    print(f"Loss no teste: {loss}")
-    print(f"Acurácia no teste: {accuracy * 100:.2f}%")
+    # Verifica os shapes
+    print("Train:", tx_train.shape, ty_train.shape)
+    print("Validation:", tx_validation.shape, ty_validation.shape)
+    print("Test:", tx_test.shape, ty_test.shape)
 
-    mgl.salvar_vetor(f"graph_elman_TS{TIMESTEPS}_{DADO}_{i}_n", n_loss)
+    #########################TREINAMENTO###########################
+    n_neuronios = [100]
 
-    print("#" * 30)
+    for i in n_neuronios:
+        print("#" * 30)
+        print(f"TREINO KFOLD {kfold + 1}")
+
+        # Modelo de rede Elman com SimpleRNN
+        model = tf.keras.Sequential([
+            tf.keras.layers.SimpleRNN(i, activation=ATIVACAO, return_sequences=True, input_shape=(TIMESTEPS, tx_train.shape[2])),
+            tf.keras.layers.TimeDistributed(tf.keras.layers.Dense(NUMERO_LETRAS, activation='softmax'))
+        ])
+
+        model.compile(
+            optimizer='adam',
+            loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=False),
+            metrics=['accuracy']
+        )
+
+        menor_loss = 100
+        menor_loss_epoch = 0
+        count_loss = 0
+        count_epoch = 0
+        n_loss = []
+
+        while True:
+            count_epoch += 1
+            print(f"\rTreinando modelo {i}n: {count_epoch}e", end="")
+
+            history = model.fit(
+                tx_train,
+                ty_train,
+                epochs=1,
+                batch_size=32,
+                validation_data=(tx_validation, ty_validation),
+                shuffle=False,
+                verbose=1)
+            
+            loss = history.history['val_loss'][0]
+            accuracy = history.history['val_accuracy'][0]
+
+            n_loss.append(loss)
+
+            if loss < menor_loss:
+                menor_loss = loss
+                menor_loss_epoch = count_epoch
+                count_loss = 0
+                model.save(f"modelos_gerados/modelo_elman_TS{TIMESTEPS}_{DADO}_fold_{foldStr}_{i}_n.keras")
+            else:
+                count_loss += 1
+
+            if count_loss > LIMITE_MENOR_LOSS:
+                break
+
+        print(f"\nNeurônios: {i}")
+        print(f"Epoch menor: {menor_loss_epoch}")
+        print(f"Menor loss: {menor_loss}")
+        print(f"Acurácia: {accuracy}%")
+
+        print(f"TESTE KFOLD {kfold + 1}")
+
+        model = load_model(f"modelos_gerados/modelo_elman_TS{TIMESTEPS}_{DADO}_fold_{foldStr}_{i}_n.keras")
+        loss, accuracy = model.evaluate(tx_test, ty_test, verbose=1)
+        print(f"Loss no teste: {loss}")
+        print(f"Acurácia no teste: {accuracy * 100:.2f}%")
+
+        mgl.salvar_vetor(f"graph_elman_TS{TIMESTEPS}_{DADO}__fold_{foldStr}_{i}_n", n_loss)
+
+        print("#" * 30)
+
