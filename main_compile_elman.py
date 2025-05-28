@@ -1,5 +1,6 @@
 import numpy as np
 import dados.videos_to_letters_pedro as videos_to_letters_pedro
+import dados.videos_to_letters_breno_v2 as videos_to_letters_breno
 import tensorflow as tf
 import main_grafico_loss as mgl
 from sklearn.model_selection import train_test_split
@@ -14,9 +15,9 @@ else:
     print("Não está utilizando GPU :(")
 
 
-TIMESTEPS = 30   # Definindo o tamanho da janela (timesteps)
+TIMESTEPS = 25   # Definindo o tamanho da janela (timesteps)
 LIMITE_MENOR_LOSS = 1000
-DADO = "pedro"
+DADO = "breno"
 
 ########-NÃO MUDAR-##########
 NUMERO_LETRAS = 27
@@ -60,10 +61,8 @@ if DADO == "pedro":
     videos_vetores = videos_to_letters_pedro.vetores
     videos_classificacoes = videos_to_letters_pedro.classificacao
 elif DADO == "breno":
-    #coloca seus dados aqui, breno
-    #videos_vetores = seu_dado.vetores
-    #videos_classificacoes = seu_dado.classificacao
-    exit()
+    videos_vetores = videos_to_letters_breno.vetores
+    videos_classificacoes = videos_to_letters_breno.classificacao
 else:
     print("ERRO - coloque o dado correto")
     exit()

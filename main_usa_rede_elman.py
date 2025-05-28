@@ -15,7 +15,7 @@ alfabeto_invertido = {
 
 cap = cv2.VideoCapture("videos_alfabeto/20250512_221413.mp4")
 if not cap.isOpened():
-    print("Erro ao abrir o vídeo.")
+    print("Erro ao abrir o vÃ­deo.")
     exit()
 print("video capturado")
 
