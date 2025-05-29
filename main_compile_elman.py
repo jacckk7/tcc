@@ -15,7 +15,8 @@ else:
     print("Não está utilizando GPU :(")
 
 
-TIMESTEPS = 25   # Definindo o tamanho da janela (timesteps)
+N_KFOLDS = 16
+TIMESTEPS = 12   # Definindo o tamanho da janela (timesteps)
 LIMITE_MENOR_LOSS = 1000
 DADO = "breno"
 
@@ -71,32 +72,37 @@ if input(f"Utilizando dados {DADO} com TIMESTEPS = {TIMESTEPS}. Confirmar (s/n):
 
 num_amostras = len(videos_vetores)
 indices = np.arange(num_amostras)
+composicoes_treino = []
 
-for kfold in range(5):
+for kfold in range(N_KFOLDS):
 
     print("#" * 30)
     print(f"KFOLD {kfold + 1}")
 
     # Dividir em treino, validaçãoo e teste (Treino 50 Validacao 20 Teste 30)
-
-    foldStr = ""
+    # Não repete composição de treino que já foi utilizada
     while True:
         idx_train, idx_rest = train_test_split(indices, test_size=0.5)
         idx_val, idx_test = train_test_split(idx_rest, test_size=0.6)
-        print("Treinamento:", list(idx_train))
-        print("Validação:", list(idx_val))
-        print("Teste:", list(idx_test))
-        foldStr += "tr"
-        for i in idx_train: foldStr = foldStr + str(i)
-        foldStr += "v"
-        for i in idx_val: foldStr = foldStr + str(i)
-        foldStr += "te"
-        for i in idx_test: foldStr = foldStr + str(i)
-        print(f"configuração {foldStr}")
-        if input("Confirmar? (s/n) : ") == "s" : break
-        foldStr = ""
+        treino = list(idx_train)
+        treino.sort()
+        if not (treino in composicoes_treino) : 
+            composicoes_treino.append(treino)
+            break
 
-
+    print("Treinamento:", list(idx_train))
+    print("Validação:", list(idx_val))
+    print("Teste:", list(idx_test))
+    
+    # monta string configuracao
+    foldStr = ""
+    foldStr += "tr"
+    for i in idx_train: foldStr = foldStr + str(i)
+    foldStr += "v"
+    for i in idx_val: foldStr = foldStr + str(i)
+    foldStr += "te"
+    for i in idx_test: foldStr = foldStr + str(i)
+    print(f"configuração {foldStr}")
 
     videos_vetores_train = [videos_vetores[i] for i in idx_train]
     videos_classificacoes_train = [videos_classificacoes[i] for i in idx_train]
@@ -107,7 +113,7 @@ for kfold in range(5):
     videos_vetores_test = [videos_vetores[i] for i in idx_test]
     videos_classificacoes_test = [videos_classificacoes[i] for i in idx_test]
 
-    # Processando os dados
+    # pre-processa os dados
     tx_train, ty_train = preparar_dados(videos_vetores_train, videos_classificacoes_train)
     tx_validation, ty_validation = preparar_dados(videos_vetores_validation, videos_classificacoes_validation)
     tx_test, ty_test = preparar_dados(videos_vetores_test, videos_classificacoes_test)
