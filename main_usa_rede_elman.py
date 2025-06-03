@@ -3,6 +3,7 @@ import mediapipe as mp
 import numpy as np
 import tensorflow as tf
 from tensorflow.keras.models import load_model
+from pos_processamento import pos_process
 
 tf.keras.config.disable_interactive_logging()
 
@@ -13,7 +14,10 @@ alfabeto_invertido = {
     21: 'v', 22: 'w', 23: 'x', 24: 'y', 25: 'z', 26: '*'
 }
 
-cap = cv2.VideoCapture("videos_alfabeto/20250512_221413.mp4")
+TIMESTEPS = 12
+PALAVRA = "zimbabwe"
+
+cap = cv2.VideoCapture(f"videos_alfabeto/{PALAVRA}_pedro.mp4")
 if not cap.isOpened():
     print("Erro ao abrir o vÃ­deo.")
     exit()
@@ -22,9 +26,10 @@ print("video capturado")
 mp_hands = mp.solutions.hands
 hand = mp_hands.Hands(max_num_hands=1)
 
-model = load_model("modelos_gerados/modelo_elman_TS10_pedro_100_n.keras")
+model = load_model("modelos_gerados/modelo_elman_TS12_pedro_fold_tr29047v36te851_100_n.keras")
 print("modelo carregado")
 
+sequencia_total = []
 sequence = []
 ultima_letra = ""
 while True:
@@ -47,8 +52,8 @@ while True:
 
     sequence.append(atual_point)
 
-    if len(sequence) == 10:
-      entrada = np.array(sequence).reshape(1, 10, 63)
+    if len(sequence) == TIMESTEPS:
+      entrada = np.array(sequence).reshape(1, TIMESTEPS, 63)
       previsao = model.predict(entrada, verbose=0)
       classes_previstas = np.argmax(previsao, axis=2)[0]
 
@@ -56,7 +61,7 @@ while True:
       for n in classes_previstas : letras_previstas.append(alfabeto_invertido[n])
 
       print("Sequencia prevista: ", ''.join(letras_previstas))
-
+      sequencia_total = sequencia_total + letras_previstas
       sequence = []     
   resized = cv2.resize(frame, (0, 0), fx=0.5, fy=0.5)
   cv2.imshow("capture image", resized)
@@ -66,6 +71,4 @@ while True:
     
 cv2.destroyAllWindows()
 
-#      if (letra_prevista != ultima_letra):
-#        print(f"\rLetra prevista: {letra_prevista}", end="")
-#        ultima_letra = letra_prevista
+pos_process(sequencia_total)
