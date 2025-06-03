@@ -21,7 +21,7 @@ DADO = "pedro"
 
 alfabeto = {v: k for k, v in alfabeto_invertido.items()}
 
-model = load_model("modelos_gerados/modelo_elman_TS25_breno_fold_tr63917v50te284_100_n.keras")
+model = load_model("modelos_gerados/modelo_elman_TS12_breno_fold_tr73461v95te082_100_n.keras")
 print("modelo carregado")
 
 if DADO == "pedro":
@@ -43,7 +43,7 @@ todos_rotulos_esperados = []
 # Tamanho da janela
 tamanho_janela = 25
 
-idx_validos = [2, 8, 4]
+idx_validos = [0, 2, 8]
 
 # Loop sobre todos os vídeos disponíveis ou loop sobre os indices de teste
 for idx in range(len(videos_vetores)):
@@ -82,8 +82,8 @@ for idx in range(len(videos_vetores)):
 
 # Cria matriz de confusãoo
 matriz_confusao = confusion_matrix(
-  rotulos_esperados,
-  rotulos_preditos,
+  todos_rotulos_esperados,
+  todos_rotulos_preditos,
   labels=list(range(27))
 )
 
