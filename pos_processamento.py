@@ -69,7 +69,7 @@ def pos_process(sequencia):
     if anterior != '*' and count_letra > sensibilidade_letra:
         resultado = resultado + anterior
         
-    pergunta = "Encontre a palavra no português e que seja nome de pessoa, cidade estado ou país que melhor se aproxima da palavra " + resultado + ", lembrando que existem letras erradas e repetidas dentro dela. Me dê apenas a resposta final."
+    pergunta = "Encontre a palavra no português e que seja nome de pessoa, cidade, estado ou país que melhor se aproxima da palavra " + resultado + ", lembrando que existem letras erradas e repetidas dentro dela. Me dê apenas a resposta final."
     print("palavra limpa: " + resultado)
     print("palavra corrigida: " + corrigir_palavra(resultado))
     """ response = ollama.chat(
