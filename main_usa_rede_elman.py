@@ -14,61 +14,97 @@ alfabeto_invertido = {
     21: 'v', 22: 'w', 23: 'x', 24: 'y', 25: 'z', 26: '*'
 }
 
-TIMESTEPS = 12
-PALAVRA = "zimbabwe"
+palavras = [
+  "amanda",
+  "beatriz",
+  "camila",
+  "dublin",
+  "eduardo",
+  "fernando",
+  "gabriela",
+  "helsinque",
+  "italia",
+  "jacarta",
+  "kyoto",
+  "luxemburgo",
+  "mariana",
+  "nairobi",
+  "oslo",
+  "portugal",
+  "qatar",
+  "raphael",
+  "samuel",
+  "tokyo",
+  "uruguai",
+  "vancouver",
+  "william",
+  "xangai",
+  "yuri",
+  "zimbabwe",
+]
 
-cap = cv2.VideoCapture(f"videos_alfabeto/{PALAVRA}_pedro.mp4")
-if not cap.isOpened():
-    print("Erro ao abrir o vÃ­deo.")
-    exit()
-print("video capturado")
+DADOS = "breno"
+TIMESTEPS = 12
+LLM = "gemini"
+
+resultado_final = ""
 
 mp_hands = mp.solutions.hands
 hand = mp_hands.Hands(max_num_hands=1)
-
-model = load_model("modelos_gerados/modelo_elman_TS12_pedro_fold_tr29047v36te851_100_n.keras")
+model = load_model("modelos_gerados/modelo_elman_TS12_breno_fold_tr73461v95te082_100_n.keras")
+#model = load_model("modelos_gerados/modelo_elman_TS25_breno_fold_tr63917v50te284_100_n.keras")
 print("modelo carregado")
 
-sequencia_total = []
-sequence = []
-ultima_letra = ""
-while True:
-  success, frame = cap.read()
+for palavra in palavras:
+  cap = cv2.VideoCapture(f"videos_palavras/{palavra}.MOV")
+  if not cap.isOpened():
+      print("Erro ao abrir o video.")
+      exit()
+  print("video capturado")
 
-  if not success or frame is None:
-    print("erro ao ler frame")
-    break
-  RGB_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-  result = hand.process(RGB_frame)
-  if result.multi_hand_world_landmarks:
-    handLandmarks = result.multi_hand_world_landmarks[0]
-    
-    atual_point = []
-    
-    for i in range(0, 21):
-      atual_point.append(handLandmarks.landmark[i].x)
-      atual_point.append(handLandmarks.landmark[i].y)
-      atual_point.append(handLandmarks.landmark[i].z)
+  sequencia_total = []
+  sequence = []
+  ultima_letra = ""
+  while True:
+    success, frame = cap.read()
 
-    sequence.append(atual_point)
+    if not success or frame is None:
+      print("erro ao ler frame")
+      break
+    RGB_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+    result = hand.process(RGB_frame)
+    if result.multi_hand_world_landmarks:
+      handLandmarks = result.multi_hand_world_landmarks[0]
+      
+      atual_point = []
+      
+      for i in range(0, 21):
+        atual_point.append(handLandmarks.landmark[i].x)
+        atual_point.append(handLandmarks.landmark[i].y)
+        atual_point.append(handLandmarks.landmark[i].z)
 
-    if len(sequence) == TIMESTEPS:
-      entrada = np.array(sequence).reshape(1, TIMESTEPS, 63)
-      previsao = model.predict(entrada, verbose=0)
-      classes_previstas = np.argmax(previsao, axis=2)[0]
+      sequence.append(atual_point)
 
-      letras_previstas = []
-      for n in classes_previstas : letras_previstas.append(alfabeto_invertido[n])
+      if len(sequence) == TIMESTEPS:
+        entrada = np.array(sequence).reshape(1, TIMESTEPS, 63)
+        previsao = model.predict(entrada, verbose=0)
+        classes_previstas = np.argmax(previsao, axis=2)[0]
 
-      print("Sequencia prevista: ", ''.join(letras_previstas))
-      sequencia_total = sequencia_total + letras_previstas
-      sequence = []     
-  resized = cv2.resize(frame, (0, 0), fx=0.5, fy=0.5)
-  cv2.imshow("capture image", resized)
-  if cv2.waitKey(1) == ord('q'):
-    break
+        letras_previstas = []
+        for n in classes_previstas : letras_previstas.append(alfabeto_invertido[n])
 
-    
-cv2.destroyAllWindows()
+        #print("Sequencia prevista: ", ''.join(letras_previstas))
+        sequencia_total = sequencia_total + letras_previstas
+        sequence = []     
+    resized = cv2.resize(frame, (0, 0), fx=0.5, fy=0.5)
+    cv2.imshow("capture image", resized)
+    if cv2.waitKey(1) == ord('q'):
+      break
 
-pos_process(sequencia_total)
+      
+  cv2.destroyAllWindows()
+
+  resultado_final = resultado_final + f"Palavra: {palavra}\n" + pos_process(sequencia_total)
+
+with open(f"resultados_TS{TIMESTEPS}_{LLM}_{DADOS}.txt", "w", encoding="utf-8") as arquivo:
+  arquivo.write(resultado_final)

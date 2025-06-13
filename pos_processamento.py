@@ -1,4 +1,7 @@
 import requests
+import ollama
+import google.generativeai as genai
+import traceback
 
 sensibilidade_letra = 3
 sensibilidade_espaco = 3
@@ -65,18 +68,28 @@ def pos_process(sequencia):
                     count_trans = 0
     if anterior != '*' and count_letra > sensibilidade_letra:
         resultado = resultado + anterior
+        
+    pergunta = "Encontre a palavra no português e que seja nome de pessoa, cidade estado ou país que melhor se aproxima da palavra " + resultado + ", lembrando que existem letras erradas e repetidas dentro dela. Me dê apenas a resposta final."
     print("palavra limpa: " + resultado)
     print("palavra corrigida: " + corrigir_palavra(resultado))
+    """ response = ollama.chat(
+        model='llama3',
+        messages=[
+            {"role": "user", "content": pergunta}
+        ]
+    )
 
-
-
-
-            
-            
-            
+    print(response['message']['content'])
+    return "palavra limpa: " + resultado + "\n" + "palavra corrigida: " + corrigir_palavra(resultado) + "\n" + response['message']['content'] + "\n\n" """
     
+    try:
+        genai.configure(api_key="AIzaSyAiDaoJg5rIaxQqNfA51kGrQW_7_59V77A")
+    
+        model = genai.GenerativeModel("models/gemini-1.5-flash")
+        response = model.generate_content(pergunta)
+        print(response.text)
+    except Exception as e:
+        print("Erro detectado:", type(e).__name__, "-", e)
 
-
-
-
-
+    return "palavra limpa: " + resultado + "\n" + "palavra corrigida: " + corrigir_palavra(resultado) + "\n" + response.text + "\n"
+    

@@ -1,0 +1,132 @@
+Palavra: amanda
+palavra limpa: amaamaxmmnnmdsaaa
+palavra corrigida: amaamaxmmnnmdsaaa
+Amazonas
+
+Palavra: beatriz
+palavra limpa: beeattuuuiikkz
+palavra corrigida: beeattuuuiikkz
+Beatriz
+
+Palavra: camila
+palavra limpa: camxjila
+palavra corrigida: Camila
+Jamaica
+
+Palavra: dublin
+palavra limpa: fffffffffffffffnff
+palavra corrigida: fffffffffffffffnff
+Finlândia
+
+Palavra: eduardo
+palavra limpa: fduuaaauruudcoff
+palavra corrigida: fduuaaauruudcoff
+Portugal
+
+Palavra: fernando
+palavra limpa: fffffffffffnando
+palavra corrigida: fffffffffffnando
+Fernando
+
+Palavra: gabriela
+palavra limpa: fgaabuuuuielaa
+palavra corrigida: fgaabuuuuielaa
+Gabriel
+
+Palavra: helsinque
+palavra limpa: vhlssjinqxrueee
+palavra corrigida: vhlssjinqxrueee
+Lisboa
+
+Palavra: italia
+palavra limpa: fffffffffffffffffff
+palavra corrigida: fffffffffffffffffff
+Finlândia
+
+Palavra: jacarta
+palavra limpa: ffffjacsaurta
+palavra corrigida: ffffjacsaurta
+Jacarta
+
+Palavra: kyoto
+palavra limpa: fffffffffffffff
+palavra corrigida: fffffffffffffff
+Fortaleza
+
+Palavra: luxemburgo
+palavra limpa: luuuvemtbuvuruuudglo
+palavra corrigida: luuuvemtbuvuruuudglo
+Portugal
+
+Palavra: mariana
+palavra limpa: fmmaaurujjnnaaa
+palavra corrigida: fmmaaurujjnnaaa
+Mauritânia
+
+Palavra: nairobi
+palavra limpa: fnnnajiurobi
+palavra corrigida: fnnnajiurobi
+Nairobi
+
+Palavra: oslo
+palavra limpa: osslco
+palavra corrigida: ocupou
+Lisboa
+
+Palavra: portugal
+palavra limpa: ffpcorrthugggaal
+palavra corrigida: ffpcorrthugggaal
+Portugal
+
+Palavra: qatar
+palavra limpa: qaatauuu
+palavra corrigida: Santaluz
+Catar
+
+Palavra: raphael
+palavra limpa: ururazppvhaeell
+palavra corrigida: ururazppvhaeell
+Portugal
+
+Palavra: samuel
+palavra limpa: yssaamrruuueel
+palavra corrigida: yssaamrruuueel
+Israel
+
+Palavra: tokyo
+palavra limpa: tozgkyo
+palavra corrigida: tóxico
+Tóquio
+
+Palavra: uruguai
+palavra limpa: uuruugkuuaii
+palavra corrigida: uuruugkuuaii
+Uruguai
+
+Palavra: vancouver
+palavra limpa: vanncouuveeeurr
+palavra corrigida: vanncouuveeeurr
+Vancouver
+
+Palavra: william
+palavra limpa: wjllsijam
+palavra corrigida: William
+Lisboa
+
+Palavra: xangai
+palavra limpa: djxanllgaiiii
+palavra corrigida: djxanllgaiiii
+Alexandria
+
+Palavra: yuri
+palavra limpa: yyuuuurjj
+palavra corrigida: yyuuuurjj
+Júlia
+
+Palavra: zimbabwe
+palavra limpa: zzjjimwbaabwe
+palavra corrigida: zzjjimwbaabwe
+Zimbábue
+
+languagetool - 2/26
+gemini - 10/26
