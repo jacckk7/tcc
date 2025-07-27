@@ -1,27 +1,11 @@
 import requests
+import google.generativeai as genai
+import traceback
 
 sensibilidade_letra = 3
 sensibilidade_espaco = 3
 
-def corrigir_palavra(palavra):
-    url = "https://api.languagetool.org/v2/check"
-    data = {
-        'text': palavra,
-        'language': 'pt-BR'
-    }
-
-    response = requests.post(url, data=data)
-    result = response.json()
-
-    # Verifica se há alguma sugestão de correção
-    matches = result.get("matches", [])
-    if matches:
-        # Pega a primeira sugestão da primeira correção
-        sugestoes = matches[0].get("replacements", [])
-        if sugestoes:
-            return sugestoes[0]["value"]  # Palavra mais provável
-
-    return palavra  # Retorna a original se não houver correções
+maximo_letras_repetitiveis = 2
 
 def pos_process(sequencia):
     resultado = ""
@@ -65,18 +49,28 @@ def pos_process(sequencia):
                     count_trans = 0
     if anterior != '*' and count_letra > sensibilidade_letra:
         resultado = resultado + anterior
-    print("palavra limpa: " + resultado)
-    print("palavra corrigida: " + corrigir_palavra(resultado))
+        
+    print("palavra limpa 1: " + resultado) 
 
+    resultado = pos_process_2(resultado)
 
+    return resultado
 
+def pos_process_2(sequencia):
+    count_letra = 0
+    count_consoante = 0
+    ultima_letra = ""
+    resultado = ""
 
-            
-            
-            
-    
+    for l in sequencia:
 
-
-
-
-
+        if l == ultima_letra:
+            count_letra += 1
+            if count_letra <= maximo_letras_repetitiveis:
+                resultado += l
+        else:
+            resultado += l
+            ultima_letra = l
+            count_letra = 1
+    print("palavra limpa 2: " + resultado)
+    return resultado

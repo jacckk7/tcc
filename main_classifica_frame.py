@@ -1,9 +1,9 @@
 import mediapipe as mp
 import cv2
-import dados.videos_to_letters_ABC_espelhado as videos_to_letters
+import dados.videos_to_letters_fluente as videos_to_letters
 
-CAMINHO_VIDEO = "./ABC/20250414_141656_espelhado.mp4"
-CAMINHO_ARQUIVO = "./dados/videos_to_letters_ABC_espelhado.py"
+CAMINHO_VIDEO = "./videos_alfabeto/alfabeto-fluente-17.mp4"
+CAMINHO_ARQUIVO = "./dados/videos_to_letters_fluente.py"
 
 vetores = videos_to_letters.vetores
 classificacoes = videos_to_letters.classificacao
@@ -45,11 +45,12 @@ while not acaba:
             
             vetores_por_frame.append(atual_point)
             
-            resized = cv2.resize(frame, (0, 0), fx=0.5, fy=0.5)
-            cv2.imshow("capture image", resized)
+            #resized = cv2.resize(frame, (0, 0), fx=0.5, fy=0.5)
+            cv2.imshow("capture image", frame)
             count += 1
             print(f"\rFrame {count} : ", end="")
             classificacao = chr(cv2.waitKey(0))
+            if classificacao == "!": exit()
             print(f"\rFrame {count} : {classificacao}")
             classificacao_por_frame.append(classificacao)
     else:

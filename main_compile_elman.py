@@ -1,10 +1,12 @@
 import numpy as np
 import dados.videos_to_letters_pedro as videos_to_letters_pedro
 import dados.videos_to_letters_breno_v2 as videos_to_letters_breno
+import dados.videos_to_letters_fluente as videos_to_letters_fluente
 import tensorflow as tf
 import main_grafico_loss as mgl
 from sklearn.model_selection import train_test_split
 from tensorflow.keras.models import load_model
+import time
 
 # Desabilita logs interativos do Keras
 tf.keras.config.disable_interactive_logging()
@@ -14,11 +16,12 @@ if len(gpu) > 0:
 else:
     print("Não está utilizando GPU :(")
 
-
+tempos = []
+logs = ""
 N_KFOLDS = 16
-TIMESTEPS = 12   # Definindo o tamanho da janela (timesteps)
+TIMESTEPS = 8   # Definindo o tamanho da janela (timesteps)
 LIMITE_MENOR_LOSS = 1000
-DADO = "breno"
+DADO = "pedro"
 
 ########-NÃO MUDAR-##########
 NUMERO_LETRAS = 27
@@ -46,6 +49,9 @@ def preparar_dados(videos, labels):
 
     return np.array(x), np.array(y)
 
+def print_log(s, l):
+    print(s)
+    return l + s + "\n"
 # Preparando os dados
 x = []  # Vetores de landmarks
 y = []  # Vetor de letras
@@ -64,6 +70,9 @@ if DADO == "pedro":
 elif DADO == "breno":
     videos_vetores = videos_to_letters_breno.vetores
     videos_classificacoes = videos_to_letters_breno.classificacao
+elif DADO == "fluente":
+    videos_vetores = videos_to_letters_fluente.vetores
+    videos_classificacoes = videos_to_letters_fluente.classificacao
 else:
     print("ERRO - coloque o dado correto")
     exit()
@@ -75,9 +84,9 @@ indices = np.arange(num_amostras)
 composicoes_treino = []
 
 for kfold in range(N_KFOLDS):
-
-    print("#" * 30)
-    print(f"KFOLD {kfold + 1}")
+    inicio = time.time()
+    logs = print_log("#" * 30, logs)
+    logs = print_log(f"KFOLD {kfold + 1}", logs)
 
     # Dividir em treino, validaçãoo e teste (Treino 50 Validacao 20 Teste 30)
     # Não repete composição de treino que já foi utilizada
@@ -90,19 +99,28 @@ for kfold in range(N_KFOLDS):
             composicoes_treino.append(treino)
             break
 
-    print("Treinamento:", list(idx_train))
-    print("Validação:", list(idx_val))
-    print("Teste:", list(idx_test))
+    logs = print_log(f"Treinamento: {list(idx_train)}", logs)
+    logs = print_log(f"Validação: {list(idx_val)}", logs)
+    logs = print_log(f"Teste: {list(idx_test)}", logs)
     
     # monta string configuracao
     foldStr = ""
     foldStr += "tr"
-    for i in idx_train: foldStr = foldStr + str(i)
+    for i in idx_train: 
+        if i < 10: s = "0" + str(i) 
+        else: s = str(i)
+        foldStr = foldStr + s
     foldStr += "v"
-    for i in idx_val: foldStr = foldStr + str(i)
+    for i in idx_val:         
+        if i < 10: s = "0" + str(i) 
+        else: s = str(i)
+        foldStr = foldStr + s
     foldStr += "te"
-    for i in idx_test: foldStr = foldStr + str(i)
-    print(f"configuração {foldStr}")
+    for i in idx_test: 
+        if i < 10: s = "0" + str(i) 
+        else: s = str(i)
+        foldStr = foldStr + s
+    logs = print_log(f"configuração {foldStr}", logs)
 
     videos_vetores_train = [videos_vetores[i] for i in idx_train]
     videos_classificacoes_train = [videos_classificacoes[i] for i in idx_train]
@@ -119,16 +137,16 @@ for kfold in range(N_KFOLDS):
     tx_test, ty_test = preparar_dados(videos_vetores_test, videos_classificacoes_test)
 
     # Verifica os shapes
-    print("Train:", tx_train.shape, ty_train.shape)
-    print("Validation:", tx_validation.shape, ty_validation.shape)
-    print("Test:", tx_test.shape, ty_test.shape)
+    logs = print_log(f"Train: {tx_train.shape}, {ty_train.shape}", logs)
+    logs = print_log(f"Validation: {tx_validation.shape}, {ty_validation.shape}", logs)
+    logs = print_log(f"Test: {tx_test.shape}, {ty_test.shape}", logs)
 
     #########################TREINAMENTO###########################
     n_neuronios = [100]
 
     for i in n_neuronios:
-        print("#" * 30)
-        print(f"TREINO KFOLD {kfold + 1}")
+        logs = print_log("#" * 30, logs)
+        logs = print_log(f"TREINO KFOLD {kfold + 1}", logs)
 
         # Modelo de rede Elman com SimpleRNN
         model = tf.keras.Sequential([
@@ -177,19 +195,35 @@ for kfold in range(N_KFOLDS):
             if count_loss > LIMITE_MENOR_LOSS:
                 break
 
-        print(f"\nNeurônios: {i}")
-        print(f"Epoch menor: {menor_loss_epoch}")
-        print(f"Menor loss: {menor_loss}")
-        print(f"Acurácia: {accuracy}%")
+        logs = print_log(f"\nNeurônios: {i}", logs)
+        logs = print_log(f"Epoch menor: {menor_loss_epoch}", logs)
+        logs = print_log(f"Menor loss: {menor_loss}", logs)
+        logs = print_log(f"Acurácia: {accuracy}%", logs)
 
-        print(f"TESTE KFOLD {kfold + 1}")
+        logs = print_log(f"TESTE KFOLD {kfold + 1}", logs)
 
         model = load_model(f"modelos_gerados/modelo_elman_TS{TIMESTEPS}_{DADO}_fold_{foldStr}_{i}_n.keras")
         loss, accuracy = model.evaluate(tx_test, ty_test, verbose=1)
-        print(f"Loss no teste: {loss}")
-        print(f"Acurácia no teste: {accuracy * 100:.2f}%")
+        logs = print_log(f"Loss no teste: {loss}", logs)
+        logs = print_log(f"Acurácia no teste: {accuracy * 100:.2f}%", logs)
 
         mgl.salvar_vetor(f"graph_elman_TS{TIMESTEPS}_{DADO}__fold_{foldStr}_{i}_n", n_loss)
 
-        print("#" * 30)
+        logs = print_log("#" * 30, logs)
+    fim = time.time()
+    tempo_decorrido = fim - inicio
+    tempos.append(tempo_decorrido)
 
+    # Mostra o tempo da execução atual
+    minutos = int(tempo_decorrido // 60)
+    segundos = int(tempo_decorrido % 60)
+    logs = print_log(f"Tempo Execução : {minutos} min {segundos} s", logs)
+
+media = sum(tempos) / len(tempos)
+
+minutos = int(media // 60)
+segundos = int(media % 60)
+logs = print_log(f"\nTempo médio: {minutos} min {segundos} s", logs)
+
+with open(f"logs_modelo_elman_TS{TIMESTEPS}_{DADO}_{i}_n.txt", "w", encoding="utf-8") as arquivo:
+  arquivo.write(logs)

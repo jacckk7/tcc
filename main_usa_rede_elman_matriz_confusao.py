@@ -1,6 +1,7 @@
 import cv2
 import dados.videos_to_letters_breno_v2 as vtb
 import dados.videos_to_letters_pedro as vtp
+import dados.videos_to_letters_fluente as vtf
 import numpy as np
 import tensorflow as tf
 from tensorflow.keras.models import load_model
@@ -16,12 +17,14 @@ alfabeto_invertido = {
     21: 'v', 22: 'w', 23: 'x', 24: 'y', 25: 'z', 26: '*'
 }
 
-MODELO = "breno"
+MODELO = "pedro"
 DADO = "pedro"
 
 alfabeto = {v: k for k, v in alfabeto_invertido.items()}
 
-model = load_model("modelos_gerados/modelo_elman_TS12_breno_fold_tr73461v95te082_100_n.keras")
+#model = load_model("modelos_gerados/modelo_elman_TS12_breno_fold_tr73461v95te082_100_n.keras")
+model = load_model("modelos_gerados/modelo_elman_TS8_pedro_fold_tr0905030201v0700te060804_100_n.keras")
+#model = load_model("modelos_gerados/modelo_elman_TS6_fluente_fold_tr00031011080712131606v011504te02140509_100_n.keras")
 print("modelo carregado")
 
 if DADO == "pedro":
@@ -30,6 +33,9 @@ if DADO == "pedro":
 elif DADO == "breno":
   videos_vetores = vtb.vetores
   videos_classificacoes = vtb.classificacao
+elif DADO == "fluente":
+  videos_vetores = vtf.vetores
+  videos_classificacoes = vtf.classificacao
 else:
   print("ERRO - coloque o dado correto")
   exit()
@@ -43,11 +49,11 @@ todos_rotulos_esperados = []
 # Tamanho da janela
 tamanho_janela = 25
 
-idx_validos = [0, 2, 8]
+idx_validos = [4, 6, 8]
 
 # Loop sobre todos os vídeos disponíveis ou loop sobre os indices de teste
-for idx in range(len(videos_vetores)):
-#for idx in idx_validos:
+#for idx in range(len(videos_vetores)):
+for idx in idx_validos:
   print(f"Fazendo teste com modelo do {MODELO} e dados do {DADO} para o index {idx}")
   entrada_frames = np.array(videos_vetores[idx])
   rotulos_esperados = np.array([alfabeto[letra] for letra in videos_classificacoes[idx]])
